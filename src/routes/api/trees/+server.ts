@@ -1,4 +1,3 @@
-import { Server as SocketIO } from 'socket.io';
 import { json } from '@sveltejs/kit';
 import fs from 'fs';
 import path from 'path';
@@ -28,20 +27,4 @@ export async function POST({ request }) {
 	}
 
 	return json({ success: false, error: 'Tree slot already filled' });
-}
-
-export function handle({ server }) {
-	const io = new SocketIO(server);
-
-	io.on('connection', (socket) => {
-		socket.emit('init', treeData);
-
-		socket.on('placeTree', ({ index, uuid, name, pfp }) => {
-			if (treeData[index] === null) {
-				treeData[index] = [uuid, name, pfp];
-				fs.writeFileSync(DATA_FILE, JSON.stringify(treeData, null, 2));
-				io.emit('treePlaced', { index, uuid });
-			}
-		});
-	});
 }
