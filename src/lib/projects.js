@@ -66,7 +66,7 @@ export const projects = [
       {
         "name": "Trees",
         "needed": 2000,
-        "available": 2,
+        "available": 4,
         "price": 15,
         "image": "/icons/tree.png",
         "cartCount": 0
@@ -75,7 +75,7 @@ export const projects = [
     "leaderboard": [
       {
         "name": "Playful Penguin",
-        "amount": 150,
+        "amount": 180,
         "profilePicture": "https://api.dicebear.com/6.x/identicon/svg?seed=61221324-cf5f-4974-bfa4-3db91901d2ec"
       }
     ]
