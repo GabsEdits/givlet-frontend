@@ -6,4 +6,6 @@
 </script>
 
 <Header />
-{@render children()}
+<div class="py-16 px-20 bg-givlet-paper rounded-4xl border border-white">
+	{@render children()}
+</div>

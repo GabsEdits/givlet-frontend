@@ -1,17 +1,14 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
+export default {
   preprocess: vitePreprocess(),
-
   kit: {
     adapter: adapter({
       pages: 'build',
       assets: 'build',
-      fallback: 'index.html', // Enable SPA mode
+      fallback: 'index.html',
+      strict: false, // Ignore dynamic routes
     }),
   },
 };
-
-export default config;
