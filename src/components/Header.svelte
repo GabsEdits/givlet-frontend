@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { generateRandomUser, getUserFromCookie, saveUserToCookie } from '$lib/user';
+	import Icon from '@iconify/svelte';
 
-	let user: { name: string; streak: number; profilePicture: string; lastLogin: string } | null = null;
+	let user: { name: string; streak: number; profilePicture: string; lastLogin: string } | null =
+		null;
+	let isDropdownOpen = false;
+	let searchQuery = '';
+	let isSearchOpen = false;
 
 	onMount(() => {
 		const cookieString = document.cookie;
-
-		// Fetch user from cookies
 		const cookieUser = getUserFromCookie(cookieString);
 
 		if (
@@ -22,66 +25,86 @@
 			typeof cookieUser.profilePicture === 'string' &&
 			typeof cookieUser.lastLogin === 'string'
 		) {
-			user = cookieUser as { name: string; streak: number; profilePicture: string; lastLogin: string };
-
-			// Check if the user logged in on a new day
+			user = cookieUser;
 			const today = new Date().toISOString().split('T')[0];
 			if (user.lastLogin !== today) {
-				user.streak += 1; // Increment streak
-				user.lastLogin = today; // Update last login date
+				user.streak += 1;
+				user.lastLogin = today;
 				saveUserToCookie(user, (cookie) => {
 					document.cookie = cookie;
 				});
 			}
 		} else {
-			// Generate a new user if no valid user exists in cookies
 			user = generateRandomUser();
-			user.lastLogin = new Date().toISOString().split('T')[0]; // Set today's date as last login
+			user.lastLogin = new Date().toISOString().split('T')[0];
 			saveUserToCookie(user, (cookie) => {
 				document.cookie = cookie;
 			});
 		}
 	});
 
-	let isDropdownOpen = false;
-
 	function toggleDropdown() {
 		isDropdownOpen = !isDropdownOpen;
 	}
+
+	function toggleSearch() {
+		isSearchOpen = !isSearchOpen;
+	}
+
+	function handleSearch(event: Event) {
+		const target = event.target as HTMLInputElement;
+		searchQuery = target.value;
+		// Implement search logic here
+	}
 </script>
 
-<div class="flex flex-row justify-between pb-8 items-center self-stretch">
-	<div class="flex items-center justify-center gap-9">
-		<a href="/" class="text-xl font-semibold">Givlet</a>
-		<div class="relative">
-			<button class="font-medium" on:click={toggleDropdown}> Information </button>
-			{#if isDropdownOpen}
-				<div
-					class="absolute mt-2 w-max bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 rounded-lg shadow-lg z-50"
-				>
-					{#each [{ href: '/about', text: 'About Us' }, { href: '/mission', text: 'Our Mission' }, { href: '/contact', text: 'Contact Us' }] as link, index (index)}
-						<a
-							href={link.href}
-							class="block px-4 py-2 text-gray-700 dark:text-zinc-100 hover:bg-gray-100 hover:dark:bg-zinc-700"
-						>
-							{link.text}
-						</a>
-					{/each}
-				</div>
-			{/if}
+<div class="flex justify-center mb-12 items-center">
+	<div
+		class="flex items-center justify-center gap-8 bg-givlet-paper backdrop-blur-md px-8 py-2 rounded-2xl border border-white"
+	>
+		<p class="font-semibold text-black">Givlet</p>
+
+		<div class="flex items-center justify-center gap-4">
+			<button class="p-2 rounded-lg bg-sky-100 text-black">
+				<Icon icon="mdi:home-outline" class="size-5" />
+			</button>
+			<button class="p-2 rounded-lg bg-transparent text-black">
+				<Icon icon="mdi:gift-outline" class="size-5" />
+			</button>
+			<button class="p-2 rounded-lg bg-transparent text-black">
+				<Icon icon="mdi:medal-outline" class="size-5" />
+			</button>
+			<button class="p-2 rounded-lg bg-transparent text-black">
+				<Icon icon="mdi:cart-outline" class="size-5" />
+			</button>
+			<button class="p-2 rounded-lg bg-transparent text-black">
+				<Icon icon="mdi:information-outline" class="size-5" />
+			</button>
+			<button onclick={toggleSearch} class="p-2 rounded-lg bg-transparent text-black">
+				<Icon icon="mdi:magnify" class="size-5" />
+			</button>
 		</div>
-	</div>
-	{#if user}
-		<div class="flex items-center gap-4">
-			<div class="text-right">
-				<p class="text-lg font-semibold">{user.name}</p>
-				<p class="text-sm text-gray-500">🔥 Streak: {user.streak} days</p>
+
+		{#if isSearchOpen}
+			<div class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-givlet-paper border border-white p-4 rounded-2xl shadow-lg">
+				<input
+					type="text"
+					placeholder="Search..."
+					class="p-2 border border-gray-300 rounded-lg w-64"
+					oninput={handleSearch}
+				/>
 			</div>
-			<img
-				src={user.profilePicture}
-				alt="{user.name}'s profile picture"
-				class="w-10 h-10 rounded-full border border-gray-300"
-			/>
-		</div>
-	{/if}
+		{/if}
+
+		{#if user}
+			<button onclick={toggleDropdown} class="flex flex-row items-center justify-center cursor-pointer">
+				<img
+					src={user.profilePicture}
+					alt="{user.name}'s profile picture"
+					class="size-6 rounded-full bg-zinc-800 border border-gray-300"
+				/>
+				<Icon icon="mdi:chevron-down" class="size-3" />
+			</button>
+		{/if}
+	</div>
 </div>
