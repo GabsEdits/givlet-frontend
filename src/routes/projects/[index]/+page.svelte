@@ -4,6 +4,7 @@
 	import { projectStore } from '$lib/stores/projectStore';
 	import { addToInventory, saveUserToCookie, getUserFromCookie } from '$lib/user';
 	import Popup3D from '$lib/components/Popup3D.svelte';
+	import Icon from '@iconify/svelte';
 
 	export let data;
 
@@ -131,110 +132,143 @@
 <div class="flex flex-col items-center gap-6">
 	{#if currentProject && currentProject.components}
 		<div
-			class="flex flex-row justify-between w-full text-white rounded-2xl px-6 py-16 md:px-18 md:py-32"
+			class="flex relative z-20 flex-col gap-5 items-center justify-center w-full text-white rounded-4xl px-6 py-16 md:px-18 md:py-28 overflow-hidden"
 			style="
-			background: linear-gradient(180deg, rgba(0, 0, 0, 0.40) 0%, rgba(0, 0, 0, 0.40) 100%), url({currentProject.image}) black 80% / cover no-repeat;
-			-webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
-			mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
-			-webkit-mask-size: cover;
-			mask-size: cover;
-		"
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.55) 100%), url({currentProject.image}) black 80% / cover no-repeat;
+	"
 		>
-			<div class="flex flex-col justify-center gap-6">
-				<h2 class="text-xl md:text-2xl font-semibold">{currentProject.name}</h2>
-				<p class="max-w-full md:max-w-72 text-sm md:text-base">{currentProject.description}</p>
-			</div>
-			<button
-				class="flex flex-col gap-2 py-6 font-bold px-9 h-max dark:bg-black bg-white dark:text-white text-black rounded-lg text-sm md:text-base hover:bg-white hover:text-black hover:border dark:hover:bg-black dark:hover:text-white transition"
-				on:click={togglePopup}
-			>
-				<span class="material-symbols-outlined"> view_in_ar </span>
-				See 3D Progress
-			</button>
-		</div>
-		<div class="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-4 mt-4">
-			<div class="bg-green-500 h-4 rounded-full" style="width: {completionPercentage}%"></div>
-		</div>
-		<p class="text-sm mt-2">Project Completion: {completionPercentage}%</p>
-		<h2 class="text-xl md:text-2xl font-semibold">Components Needed</h2>
-		<div class="flex flex-col md:flex-row w-full gap-4">
-			{#each currentProject.components as component, index (index)}
-				<div
-					class="flex flex-col justify-center items-center gap-4 p-4 flex-1"
-					style="border-right: {index !== currentProject.components.length - 1 &&
-					typeof window !== 'undefined' &&
-					window.innerWidth >= 768
-						? window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-							? '1px solid rgba(255, 255, 255, 0.1)'
-							: '1px solid rgba(0, 0, 0, 0.1)'
-						: 'none'};"
-				>
-					<img
-						src={component.image}
-						alt={component.name}
-						class="w-12 md:w-16 unique-class-{index}"
-					/>
-					<div class="flex-1 text-center">
-						<h2 class="text-lg md:text-xl font-semibold">{component.name}</h2>
-						<p class="text-xs md:text-sm font-bold">
-							{component.available}/<span class="text-[8px] md:text-[10px] opacity-60"
-								>{component.needed}</span
-							>
-						</p>
-					</div>
-					<!-- Counter -->
-					<div class="flex items-center gap-2">
-						<button
-							class="py-1 px-2 md:py-1 md:px-3 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white rounded-lg font-semibold text-sm md:text-base"
-							on:click={() => decreaseCartCount(component)}
-							disabled={component.cartCount === 0}
-						>
-							-
-						</button>
-						<span class="text-base md:text-lg font-semibold">{component.cartCount}</span>
-						<button
-							class="py-1 px-2 md:py-1 md:px-3 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white rounded-lg font-semibold text-sm md:text-base"
-							on:click={() => increaseCartCount(component)}
-							disabled={component.cartCount + component.available >= component.needed}
-						>
-							+
-						</button>
-					</div>
+			<h2 class="text-xl md:text-3xl font-semibold">{currentProject.name}</h2>
+			<p class="max-w-full md:max-w-3/4 text-lg md:text-base text-center">
+				{currentProject.description}
+			</p>
+			<div class="absolute bottom-0 left-0 w-full">
+				<div class="bg-transparent dark:bg-zinc-800 rounded-full h-4 mt-4 w-full">
+					<div class="bg-green-500 h-4 rounded-full" style="width: {completionPercentage}%;"></div>
 				</div>
-			{/each}
+			</div>
 		</div>
-		<button
-			class="py-2 px-4 bg-black dark:bg-white text-white dark:text-black rounded-lg text-sm md:text-base hover:bg-white hover:text-black hover:border dark:hover:bg-black dark:hover:text-white transition"
-			on:click={applyChangesToProject}
+		<div class="flex flex-row gap-2 w-full">
+			<div
+				class="flex items-center flex-col gap-2 bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-full"
+			>
+				<div class="flex flex-wrap items-center justify-center max-w-full gap-4">
+					{#each currentProject.components as component, index (index)}
+						<div
+							class="flex flex-col justify-center items-center gap-4 p-4"
+							style="border-right: {index !== currentProject.components.length - 1 &&
+							typeof window !== 'undefined' &&
+							window.innerWidth >= 768
+								? window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+									? '1px solid rgba(255, 255, 255, 0.1)'
+									: '1px solid rgba(0, 0, 0, 0.1)'
+								: 'none'};"
+						>
+							<img
+								src={component.image}
+								alt={component.name}
+								class="w-12 md:w-16 unique-class-{index}"
+							/>
+							<div class="flex-1 text-center">
+								<h2 class="text-lg md:text-xl font-semibold">{component.name}</h2>
+								<p class="text-xs md:text-sm font-bold">
+									{component.available}/<span class="text-[8px] md:text-[10px] opacity-60"
+										>{component.needed}</span
+									>
+								</p>
+							</div>
+							<!-- Counter -->
+							<div class="flex items-center gap-2">
+								<button
+									class="py-1 px-2 md:py-1 md:px-3 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white rounded-lg font-semibold text-sm md:text-base"
+									on:click={() => decreaseCartCount(component)}
+									disabled={component.cartCount === 0}
+								>
+									-
+								</button>
+								<span class="text-base md:text-lg font-semibold">{component.cartCount}</span>
+								<button
+									class="py-1 px-2 md:py-1 md:px-3 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white rounded-lg font-semibold text-sm md:text-base"
+									on:click={() => increaseCartCount(component)}
+									disabled={component.cartCount + component.available >= component.needed}
+								>
+									+
+								</button>
+							</div>
+						</div>
+					{/each}
+				</div>
+				<button
+					class="flex flex-row gap-2 py-2 px-16 rounded-full bg-givlet-paper border border-white shadow-md w-max font-bold text-sm md:text-base hover:bg-white hover:text-black hover:border dark:hover:bg-black dark:hover:text-white transition"
+					on:click={applyChangesToProject}
+				>
+					<Icon icon="material-symbol:cart-outline" class="size-5" />
+					Add to Cart
+				</button>
+			</div>
+			<div
+				class="flex flex-col gap-2 items-center bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-[50%]"
+			>
+				<h2 class="text-xl md:text-2xl font-semibold">Leaderboard</h2>
+				<div class="flex flex-col gap-4 w-full">
+					{#if currentProject.leaderboard.length > 0}
+						{#each currentProject.leaderboard as donor, index (index)}
+							<div class="flex items-center justify-between p-4 dark:bg-zinc-800 rounded-lg">
+								<div class="flex items-center gap-4">
+									<img
+										src={donor.profilePicture}
+										alt="{donor.name}'s profile picture"
+										class="w-10 h-10 rounded-full border border-gray-300"
+									/>
+									<p class="text-lg font-semibold">{donor.name}</p>
+								</div>
+								<p class="text-lg font-semibold text-green-500">${donor.amount.toFixed(2)}</p>
+							</div>
+						{/each}
+					{:else}
+						<p class="text-gray-500">No donations yet. Be the first to contribute!</p>
+					{/if}
+				</div>
+			</div>
+		</div>
+
+		<div
+			class="flex items-center justify-center bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-full h-[500px]"
 		>
-			Confirm Changes
-		</button>
+			<p>Placeholder here for 3D (VIEW ONLY)</p>
+		</div>
+
+		<div class="flex flex-row gap-2">
+			<div
+				class="flex items-center flex-col gap-2 bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-[60%]"
+			>
+				<Icon icon="material-symbols:info-outline" class="size-10 mb-2" />
+				<h2 class="text-xl md:text-2xl font-semibold">About the Organizer</h2>
+				<p class="text-base md:text-lg">
+					Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio mollitia itaque quidem ipsum
+					ratione quisquam magni nam consectetur vitae doloremque fugit ut, dolores sit voluptatum
+					veniam iure commodi ea quasi. Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+					Maiores unde quia ipsa. Ad reiciendis minus vero dignissimos qui. Eius voluptate omnis
+					repellendus soluta quod magni nostrum ad cumque minima aliquid! Lorem, ipsum dolor sit
+					amet consectetur adipisicing elit. At quidem, assumenda doloribus fugiat possimus illo ad
+					Lorem ipsum dolor sit, amet consectetur
+				</p>
+			</div>
+			<div
+				class="flex items-center flex-col gap-2 bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-[60%]"
+			>
+				<Icon icon="material-symbols:help-outline" class="size-10 mb-2" />
+				<h2 class="text-xl md:text-2xl font-semibold">Why help this particular project?</h2>
+				<p class="text-base md:text-lg">
+					Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio mollitia itaque quidem ipsum
+					ratione quisquam magni nam consectetur vitae doloremque fugit ut, dolores sit voluptatum
+					veniam iure commodi ea quasi. Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+					Maiores unde quia ipsa. Ad reiciendis minus vero dignissimos qui. Eius voluptate omnis				</p>
+			</div>
+		</div>
+
 		{#if isPopupOpen && currentProject}
 			<Popup3D projectName={currentProject.name} onClose={togglePopup} />
 		{/if}
-
-		<h2 class="text-xl md:text-2xl font-semibold">Leaderboard</h2>
-		<div class="flex flex-col gap-4 w-full">
-			{#if currentProject.leaderboard.length > 0}
-				{#each currentProject.leaderboard as donor, index (index)}
-					<div
-						class="flex items-center justify-between p-4 bg-gray-100 dark:bg-zinc-800 rounded-lg"
-					>
-						<div class="flex items-center gap-4">
-							<img
-								src={donor.profilePicture}
-								alt="{donor.name}'s profile picture"
-								class="w-10 h-10 rounded-full border border-gray-300"
-							/>
-							<p class="text-lg font-semibold">{donor.name}</p>
-						</div>
-						<p class="text-lg font-semibold text-green-500">${donor.amount.toFixed(2)}</p>
-					</div>
-				{/each}
-			{:else}
-				<p class="text-gray-500">No donations yet. Be the first to contribute!</p>
-			{/if}
-		</div>
 
 		<!-- Carbon Offset Calculator UI -->
 		{#if currentProject.name.toLowerCase().includes('trees')}
