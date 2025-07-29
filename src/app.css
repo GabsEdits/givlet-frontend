@@ -4,10 +4,12 @@
 
 @theme {
 	--font-sans: 'Geist', sans-serif;
+	--color-givlet-paper: #F4F9FF;
+	--color-givlet-50: #E7F2FF;
 }
 
 body {
-	@apply bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 px-12 lg:px-56 py-12;
+	@apply bg-givlet-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 px-12 lg:px-40 py-12;
 }
 
 .material-symbols-outlined {
