@@ -3,6 +3,8 @@
 	import { generateRandomUser, getUserFromCookie, saveUserToCookie } from '$lib/user';
 	import Icon from '@iconify/svelte';
 
+	let { activeTab } = $props();
+
 	let user: { name: string; streak: number; profilePicture: string; lastLogin: string } | null =
 		null;
 	let isDropdownOpen = false;
@@ -65,28 +67,25 @@
 		<p class="font-semibold text-black">Givlet</p>
 
 		<div class="flex items-center justify-center gap-4">
-			<button class="p-2 rounded-lg bg-sky-100 text-black">
-				<Icon icon="mdi:home-outline" class="size-5" />
-			</button>
-			<button class="p-2 rounded-lg bg-transparent text-black">
-				<Icon icon="mdi:gift-outline" class="size-5" />
-			</button>
-			<button class="p-2 rounded-lg bg-transparent text-black">
-				<Icon icon="mdi:medal-outline" class="size-5" />
-			</button>
-			<button class="p-2 rounded-lg bg-transparent text-black">
-				<Icon icon="mdi:cart-outline" class="size-5" />
-			</button>
-			<button class="p-2 rounded-lg bg-transparent text-black">
-				<Icon icon="mdi:information-outline" class="size-5" />
-			</button>
+			{#each [{ tab: 'home', icon: 'material-symbols:home-outline' }, { tab: 'organizations', icon: 'material-symbols:diversity-4-outline' }, { tab: 'leaderboard', icon: 'material-symbols:social-leaderboard-outline' }, { tab: 'cart', icon: 'material-symbols:shopping-cart-outline' }, { tab: 'about', icon: 'material-symbols:info-outline' }] as item, index (item.tab)}
+				<a
+					href={`/${item.tab === 'home' ? '' : item.tab}`}
+					class="p-2 rounded-lg {activeTab === item.tab
+						? 'bg-sky-100'
+						: 'bg-transparent'} text-black"
+				>
+					<Icon icon={item.icon} class="size-5" />
+				</a>
+			{/each}
 			<button onclick={toggleSearch} class="p-2 rounded-lg bg-transparent text-black">
-				<Icon icon="mdi:magnify" class="size-5" />
+				<Icon icon="material-symbols:magnify" class="size-5" />
 			</button>
 		</div>
 
 		{#if isSearchOpen}
-			<div class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-givlet-paper border border-white p-4 rounded-2xl shadow-lg">
+			<div
+				class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-givlet-paper border border-white p-4 rounded-2xl shadow-lg"
+			>
 				<input
 					type="text"
 					placeholder="Search..."
@@ -97,13 +96,16 @@
 		{/if}
 
 		{#if user}
-			<button onclick={toggleDropdown} class="flex flex-row items-center justify-center cursor-pointer">
+			<button
+				onclick={toggleDropdown}
+				class="flex flex-row items-center justify-center cursor-pointer"
+			>
 				<img
 					src={user.profilePicture}
 					alt="{user.name}'s profile picture"
 					class="size-6 rounded-full bg-zinc-800 border border-gray-300"
 				/>
-				<Icon icon="mdi:chevron-down" class="size-3" />
+				<Icon icon="material-symbols:arrow-drop-down" class="size-3" />
 			</button>
 		{/if}
 	</div>
