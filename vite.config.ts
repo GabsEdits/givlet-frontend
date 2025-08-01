@@ -10,6 +10,6 @@ export default defineConfig({
   },
   plugins: [tailwindcss(), sveltekit()],
   server: {
-    allowedHosts: ["givlet.gxbs.dev", "preview-givlet.gxbs.dev"],
+    allowedHosts: ["givlet.gxbs.dev", "preview-givlet.gxbs.dev"]
   },
 });

@@ -71,8 +71,8 @@
 				<a
 					href={`/${item.tab === 'home' ? '' : item.tab}`}
 					class="p-2 rounded-lg {activeTab === item.tab
-						? 'bg-sky-950'
-						: 'bg-transparent'} text-white"
+						? 'bg-sky-100 dark:bg-sky-950'
+						: 'bg-transparent'} text-black dark:text-white"
 				>
 					<Icon icon={item.icon} class="size-5" />
 				</a>
