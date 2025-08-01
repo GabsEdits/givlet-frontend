@@ -3,6 +3,7 @@
 	import { projects } from '$lib/projects';
 	import { addToInventory, getUserFromCookie } from '$lib/user';
 	import { onMount } from 'svelte';
+	import Paper from '$lib/Paper.svelte';
 
 	let cart = [];
 	let user = null;
@@ -94,31 +95,34 @@
 	}
 </script>
 
-<div class="flex flex-col items-center gap-6">
-	<h1 class="text-2xl font-bold">Your Cart</h1>
-	{#if cart.length > 0}
-		<div class="flex flex-col gap-4 w-full">
-			{#each cart as item, index (item.name)}
-				<div
-					class="flex items-center justify-between p-4 bg-givlet-paper dark:bg-givlet-paper-800 rounded-lg"
-				>
-					<div class="flex items-center gap-4">
-						<img src={item.image} alt={item.name} class="w-10 h-10 rounded-full" />
-						<p class="text-lg font-semibold">{item.name}</p>
+<Paper activeTab="cart">
+	<div class="flex flex-col items-center gap-6">
+		<h1 class="text-2xl font-bold">Your Cart</h1>
+		{#if cart.length > 0}
+			<div class="flex flex-col gap-4 w-full">
+				{#each cart as item, index (item.name)}
+					<div
+						class="flex items-center justify-between p-4 bg-givlet-paper dark:bg-givlet-paper-800 rounded-lg"
+						{...{ key: index }}
+					>
+						<div class="flex items-center gap-4">
+							<img src={item.image} alt={item.name} class="w-10 h-10 rounded-full" />
+							<p class="text-lg font-semibold">{item.name}</p>
+						</div>
+						<p class="text-lg font-semibold text-green-500">
+							{item.cartCount} x ${item.price.toFixed(2)}
+						</p>
 					</div>
-					<p class="text-lg font-semibold text-green-500">
-						{item.cartCount} x ${item.price.toFixed(2)}
-					</p>
-				</div>
-			{/each}
-		</div>
-		<button
-			class="py-2 px-4 bg-green-500 text-white rounded-lg text-sm md:text-base hover:bg-green-600 transition"
-			on:click={donate}
-		>
-			Donate
-		</button>
-	{:else}
-		<p class="text-gray-500">Your cart is empty.</p>
-	{/if}
-</div>
+				{/each}
+			</div>
+			<button
+				class="py-2 px-4 bg-green-500 text-white rounded-lg text-sm md:text-base hover:bg-green-600 transition"
+				on:click={donate}
+			>
+				Donate
+			</button>
+		{:else}
+			<p class="text-gray-500">Your cart is empty.</p>
+		{/if}
+	</div>
+</Paper>
