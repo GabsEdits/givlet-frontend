@@ -67,9 +67,10 @@
 		<p class="font-semibold">Givlet</p>
 
 		<div class="flex items-center justify-center gap-4">
-			{#each [{ tab: 'home', icon: 'material-symbols:home-outline' }, { tab: 'organizations', icon: 'material-symbols:diversity-4-outline' }, { tab: 'leaderboard', icon: 'material-symbols:social-leaderboard-outline' }, { tab: 'cart', icon: 'material-symbols:shopping-cart-outline' }, { tab: 'about', icon: 'material-symbols:info-outline' }] as item, index (item.tab)}
+			{#each [{ tab: 'home', icon: 'material-symbols:home-outline' }, { tab: 'organizations', icon: 'material-symbols:diversity-4-outline' }, { tab: 'leaderboard', icon: 'material-symbols:social-leaderboard-outline' }, { tab: 'cart', icon: 'material-symbols:shopping-cart-outline' }, { tab: 'info', icon: 'material-symbols:info-outline' }] as item, index (item.tab)}
 				<a
 					href={`/${item.tab === 'home' ? '' : item.tab}`}
+					{...{ key: index }}
 					class="p-2 rounded-lg {activeTab === item.tab
 						? 'bg-sky-100 dark:bg-sky-950'
 						: 'bg-transparent'} text-black dark:text-white"
