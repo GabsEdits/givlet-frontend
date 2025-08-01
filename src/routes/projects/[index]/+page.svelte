@@ -4,7 +4,27 @@
 	import { projectStore } from '$lib/stores/projectStore';
 	import { addToInventory, saveUserToCookie, getUserFromCookie } from '$lib/user';
 	import Popup3D from '$lib/components/Popup3D.svelte';
+	import ThreeDCanvas from '$lib/components/ThreeDCanvas.svelte';
 	import Icon from '@iconify/svelte';
+	import { addToCart } from '$lib/stores/cartStore';
+
+	async function applyChangesToProject(): Promise<void> {
+		currentProject.components.forEach((component) => {
+			if (component.cartCount > 0) {
+				addToCart({
+					name: component.name,
+					image: component.image,
+					needed: component.needed,
+					available: component.available,
+					cartCount: component.cartCount,
+					price: component.price
+				});
+				component.cartCount = 0;
+			}
+		});
+
+		alert('Items added to cart!');
+	}
 
 	export let data;
 
@@ -46,43 +66,6 @@
 			projectStore.set({ ...currentProject });
 			console.log(`Decreased cartCount for ${component.name}:`, component.cartCount);
 		}
-	}
-
-	async function applyChangesToProject(): Promise<void> {
-		currentProject.components.forEach((component) => {
-			const donatedCount = component.cartCount;
-			const donationAmount = donatedCount * component.price;
-
-			component.available += donatedCount;
-
-			if (user) {
-				addToInventory(user, component.name, donatedCount, (cookie) => {
-					document.cookie = cookie;
-				});
-
-				const existingDonor = currentProject.leaderboard.find((donor) => donor.name === user.name);
-				if (existingDonor) {
-					existingDonor.amount += donationAmount;
-				} else {
-					currentProject.leaderboard.push({
-						name: user.name,
-						amount: donationAmount,
-						profilePicture: user.profilePicture
-					});
-				}
-
-				currentProject.leaderboard.sort((a, b) => b.amount - a.amount);
-			}
-
-			component.cartCount = 0;
-		});
-
-		completionPercentage = calculateCompletion();
-
-		await updateProjectsFile();
-
-		console.log('Updated project:', currentProject);
-		alert('Changes applied successfully!');
 	}
 
 	function calculateCompletion(): number {
@@ -142,14 +125,14 @@
 				{currentProject.description}
 			</p>
 			<div class="absolute bottom-0 left-0 w-full">
-				<div class="bg-transparent dark:bg-zinc-800 rounded-full h-4 mt-4 w-full">
+				<div class="bg-transparent rounded-full h-4 mt-4 w-full">
 					<div class="bg-green-500 h-4 rounded-full" style="width: {completionPercentage}%;"></div>
 				</div>
 			</div>
 		</div>
 		<div class="flex flex-row gap-2 w-full">
 			<div
-				class="flex items-center flex-col gap-2 bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-full"
+				class="flex items-center flex-col gap-2 bg-givlet-paper dark:bg-givlet-paper-800 border border-white dark:border-white/10 shadow-xl py-5 px-8 rounded-2xl w-full"
 			>
 				<div class="flex flex-wrap items-center justify-center max-w-full gap-4">
 					{#each currentProject.components as component, index (index)}
@@ -179,7 +162,7 @@
 							<!-- Counter -->
 							<div class="flex items-center gap-2">
 								<button
-									class="py-1 px-2 md:py-1 md:px-3 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white rounded-lg font-semibold text-sm md:text-base"
+									class="py-1 px-2 md:py-1 md:px-3 bg-givlet-paper border border-white dark:border-white/10 shadow-md dark:bg-givlet-paper-800 text-black dark:text-white rounded-lg font-semibold text-sm md:text-base"
 									on:click={() => decreaseCartCount(component)}
 									disabled={component.cartCount === 0}
 								>
@@ -187,7 +170,7 @@
 								</button>
 								<span class="text-base md:text-lg font-semibold">{component.cartCount}</span>
 								<button
-									class="py-1 px-2 md:py-1 md:px-3 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white rounded-lg font-semibold text-sm md:text-base"
+									class="py-1 px-2 md:py-1 md:px-3 bg-givlet-paper border border-white dark:border-white/10 shadow-md dark:bg-givlet-paper-800 text-black dark:text-white rounded-lg font-semibold text-sm md:text-base"
 									on:click={() => increaseCartCount(component)}
 									disabled={component.cartCount + component.available >= component.needed}
 								>
@@ -198,7 +181,7 @@
 					{/each}
 				</div>
 				<button
-					class="flex flex-row gap-2 py-2 px-16 rounded-full bg-givlet-paper border border-white shadow-md w-max font-bold text-sm md:text-base hover:bg-white hover:text-black hover:border dark:hover:bg-black dark:hover:text-white transition"
+					class="flex flex-row gap-2 py-2 px-16 rounded-full bg-givlet-paper dark:bg-givlet-paper-800 border border-white dark:border-white/10 shadow-md w-max font-bold text-sm md:text-base hover:bg-white hover:text-black hover:border dark:hover:bg-black dark:hover:text-white transition"
 					on:click={applyChangesToProject}
 				>
 					<Icon icon="material-symbol:cart-outline" class="size-5" />
@@ -206,13 +189,13 @@
 				</button>
 			</div>
 			<div
-				class="flex flex-col gap-2 items-center bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-[50%]"
+				class="flex flex-col gap-2 items-center bg-givlet-paper dark:bg-givlet-paper-800 border border-white dark:border-white/10 shadow-xl py-5 px-8 rounded-2xl w-[50%]"
 			>
 				<h2 class="text-xl md:text-2xl font-semibold">Leaderboard</h2>
 				<div class="flex flex-col gap-4 w-full">
 					{#if currentProject.leaderboard.length > 0}
 						{#each currentProject.leaderboard as donor, index (index)}
-							<div class="flex items-center justify-between p-4 dark:bg-zinc-800 rounded-lg">
+							<div class="flex items-center justify-between p-4 rounded-lg">
 								<div class="flex items-center gap-4">
 									<img
 										src={donor.profilePicture}
@@ -232,37 +215,33 @@
 		</div>
 
 		<div
-			class="flex items-center justify-center bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-full h-[500px]"
+			class="flex items-center justify-center bg-givlet-paper dark:bg-givlet-paper-800 border border-white dark:border-white/10 shadow-xl py-5 px-8 rounded-2xl w-full h-[500px]"
 		>
-			<p>Placeholder here for 3D (VIEW ONLY)</p>
+			<ThreeDCanvas />
 		</div>
 
 		<div class="flex flex-row gap-2">
 			<div
-				class="flex items-center flex-col gap-2 bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-[60%]"
+				class="flex items-center flex-col gap-2 bg-givlet-paper dark:bg-givlet-paper-800 border border-white dark:border-white/10 shadow-xl py-5 px-8 rounded-2xl w-[60%]"
 			>
 				<Icon icon="material-symbols:info-outline" class="size-10 mb-2" />
 				<h2 class="text-xl md:text-2xl font-semibold">About the Organizer</h2>
 				<p class="text-base md:text-lg">
-					Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio mollitia itaque quidem ipsum
-					ratione quisquam magni nam consectetur vitae doloremque fugit ut, dolores sit voluptatum
-					veniam iure commodi ea quasi. Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-					Maiores unde quia ipsa. Ad reiciendis minus vero dignissimos qui. Eius voluptate omnis
-					repellendus soluta quod magni nostrum ad cumque minima aliquid! Lorem, ipsum dolor sit
-					amet consectetur adipisicing elit. At quidem, assumenda doloribus fugiat possimus illo ad
-					Lorem ipsum dolor sit, amet consectetur
+					{currentProject.organizer
+						? currentProject.organizer.description
+						: 'No organizer information available.'}
 				</p>
 			</div>
 			<div
-				class="flex items-center flex-col gap-2 bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-[60%]"
+				class="flex items-center flex-col gap-2 bg-givlet-paper dark:bg-givlet-paper-800 border border-white dark:border-white/10 shadow-xl py-5 px-8 rounded-2xl w-[60%]"
 			>
 				<Icon icon="material-symbols:help-outline" class="size-10 mb-2" />
 				<h2 class="text-xl md:text-2xl font-semibold">Why help this particular project?</h2>
 				<p class="text-base md:text-lg">
-					Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio mollitia itaque quidem ipsum
-					ratione quisquam magni nam consectetur vitae doloremque fugit ut, dolores sit voluptatum
-					veniam iure commodi ea quasi. Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-					Maiores unde quia ipsa. Ad reiciendis minus vero dignissimos qui. Eius voluptate omnis				</p>
+					{currentProject.reason
+						? currentProject.reason
+						: 'No specific reason provided for this project.'}
+				</p>
 			</div>
 		</div>
 
@@ -282,13 +261,13 @@
 						<input
 							id="numberOfTrees"
 							type="number"
-							class="py-1 px-2 md:py-1 md:px-3 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white rounded-lg text-sm md:text-base"
+							class="py-1 px-2 md:py-1 md:px-3 bg-gray-100 dark:bg-givlet-paper-800 border border-white dark:border-white/10 text-black dark:text-white rounded-lg text-sm md:text-base"
 							bind:value={numberOfTrees}
 							min="0"
 						/>
 					</div>
 					<button
-						class="py-2 px-4 bg-green-500 text-white rounded-lg text-sm md:text-base hover:bg-green-600 transition"
+						class="py-2 px-4 bg-green-500 dark:bg-green-900 text-white rounded-lg text-sm md:text-base hover:bg-green-600 transition"
 						on:click={calculateCarbonOffset}
 					>
 						Calculate Carbon Offset
