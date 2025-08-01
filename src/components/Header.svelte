@@ -6,10 +6,10 @@
 	let { activeTab } = $props();
 
 	let user: { name: string; streak: number; profilePicture: string; lastLogin: string } | null =
-		null;
-	let isDropdownOpen = false;
-	let searchQuery = '';
-	let isSearchOpen = false;
+		$state(null);
+	let isDropdownOpen = $state(false);
+	let searchQuery = $state('');
+	let isSearchOpen = $state(false);
 
 	onMount(() => {
 		const cookieString = document.cookie;
@@ -62,38 +62,22 @@
 
 <div class="flex justify-center mb-12 items-center">
 	<div
-		class="flex items-center justify-center gap-8 bg-givlet-paper backdrop-blur-md px-8 py-2 rounded-2xl border border-white"
+		class="flex items-center justify-center gap-8 bg-givlet-paper dark:bg-givlet-paper-900 text-black dark:text-white backdrop-blur-md px-8 py-2 rounded-2xl border border-white dark:border-white/10"
 	>
-		<p class="font-semibold text-black">Givlet</p>
+		<p class="font-semibold">Givlet</p>
 
 		<div class="flex items-center justify-center gap-4">
 			{#each [{ tab: 'home', icon: 'material-symbols:home-outline' }, { tab: 'organizations', icon: 'material-symbols:diversity-4-outline' }, { tab: 'leaderboard', icon: 'material-symbols:social-leaderboard-outline' }, { tab: 'cart', icon: 'material-symbols:shopping-cart-outline' }, { tab: 'about', icon: 'material-symbols:info-outline' }] as item, index (item.tab)}
 				<a
 					href={`/${item.tab === 'home' ? '' : item.tab}`}
 					class="p-2 rounded-lg {activeTab === item.tab
-						? 'bg-sky-100'
-						: 'bg-transparent'} text-black"
+						? 'bg-sky-950'
+						: 'bg-transparent'} text-white"
 				>
 					<Icon icon={item.icon} class="size-5" />
 				</a>
 			{/each}
-			<button onclick={toggleSearch} class="p-2 rounded-lg bg-transparent text-black">
-				<Icon icon="material-symbols:magnify" class="size-5" />
-			</button>
 		</div>
-
-		{#if isSearchOpen}
-			<div
-				class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-givlet-paper border border-white p-4 rounded-2xl shadow-lg"
-			>
-				<input
-					type="text"
-					placeholder="Search..."
-					class="p-2 border border-gray-300 rounded-lg w-64"
-					oninput={handleSearch}
-				/>
-			</div>
-		{/if}
 
 		{#if user}
 			<button

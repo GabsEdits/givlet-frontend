@@ -13,7 +13,7 @@
 	<div class="flex flex-col gap-8 items-center justify-center w-full mt-8">
 		{#each organizations as organization, index (index)}
 			<div
-				class="flex flex-row items-center justify-between gap-2 bg-givlet-paper border border-white shadow-xl py-5 px-8 rounded-2xl w-full"
+				class="flex flex-row items-center justify-between gap-2 bg-givlet-paper dark:bg-givlet-paper-800 border border-white dark:border-white/10 shadow-xl py-5 px-8 rounded-2xl w-full"
 			>
 				<div class="flex flex-row gap-2 justify-center items-center w-max">
 					<img
@@ -31,7 +31,7 @@
 					</div>
 				</div>
 				<button
-					class="flex flex-row items-center justify-center gap-2 bg-givlet-paper border border-white shadow-md py-2 px-8 rounded-full w-max font-bold cursor-pointer"
+					class="flex flex-row items-center justify-center gap-2 bg-givlet-paper dark:bg-givlet-paper-800 border border-white dark:border-white/10 shadow-md py-2 px-8 rounded-full w-max font-bold cursor-pointer"
 					on:click={() => navigator.clipboard.writeText(organization.website)}
 				>
 					<Icon icon="material-symbols:info-outline" class="size-5" />
